@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>틀린그림 찾기</title>
+<link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e8322b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+
+<div id="app">
+  <header class="hud">
+    <h1>🔍 틀린그림 찾기</h1>
+    <div class="stage">판 <b id="stageOut">1</b></div>
+    <div class="dots" id="dots" role="img" aria-label="찾은 개수"></div>
+    <div class="hearts" id="hearts" role="img" aria-label="생명"></div>
+    <div class="tools">
+      <button id="btnSound" type="button" aria-label="소리 켜기/끄기">🔊</button>
+      <button id="btnNew" type="button">새 그림</button>
+    </div>
+  </header>
+
+  <main class="board" id="board">
+    <div class="pic"><svg id="left" viewBox="0 0 800 600" aria-label="왼쪽 그림"><g class="scene"></g><g class="marks"></g></svg></div>
+    <div class="pic"><svg id="right" viewBox="0 0 800 600" aria-label="오른쪽 그림"><g class="scene"></g><g class="marks"></g></svg></div>
+  </main>
+
+  <footer class="foot">두 그림에서 <b>다른 곳 5군데</b>를 찾아 누르세요. 아무 데나 누르면 ❤️ 가 줄어요. · 그림 번호 <span id="seedOut"></span></footer>
+</div>
+
+<!-- 두 그림이 함께 쓰는 정의. display:none 이면 필터가 안 먹는 브라우저가 있어 크기 0 으로 숨긴다. -->
+<svg class="defs" width="0" height="0" aria-hidden="true">
+  <defs>
+    <clipPath id="frame"><rect width="800" height="600" rx="22"/></clipPath>
+    <filter id="crayon" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div id="overlay" class="overlay" hidden>
+  <div class="card">
+    <div class="big" id="ovEmoji"></div>
+    <h2 id="ovTitle"></h2>
+    <p id="ovMsg"></p>
+    <button id="ovBtn" type="button" class="primary"></button>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

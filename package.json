@@ -1,0 +1,11 @@
+{
+  "name": "diffpic",
+  "version": "1.0.0",
+  "description": "틀린그림 찾기 — 틀린 곳 5개, 생명 5개(최대 10)",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  }
+}

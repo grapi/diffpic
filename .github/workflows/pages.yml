@@ -1,0 +1,44 @@
+# public/ 을 GitHub Pages 로 배포한다.
+# Pages 는 저장소 루트나 /docs 만 직접 서비스할 수 있어서, 폴더 구조를 바꾸는 대신
+# 아티팩트로 올린다. 테스트가 통과해야만 배포되므로 '틀린 곳은 정확히 5개' 성질이 깨진 채로
+# 태블릿까지 나가지 않는다.
+name: Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: deployment
+        uses: actions/deploy-pages@v4

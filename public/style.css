@@ -1,0 +1,191 @@
+:root {
+  --bg: #fdf6ec;
+  --card: #fffdf8;
+  --ink: #2b2a26;
+  --muted: #7c776d;
+  --line: #e6dccb;
+  --accent: #e8322b;
+  --heart: #ef3b4f;
+  --heart-empty: #e3d9cb;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    "Malgun Gothic", system-ui, sans-serif;
+  /* 빠르게 두 번 눌러도 확대되지 않게 */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#app {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 16px;
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+
+/* ---------- 위쪽 상태줄 ---------- */
+
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+}
+.hud h1 { margin: 0; font-size: 22px; letter-spacing: -0.02em; white-space: nowrap; }
+.stage { font-size: 18px; white-space: nowrap; }
+.stage b { font-size: 22px; }
+
+.dots { display: flex; gap: 6px; }
+.dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 3px solid var(--accent);
+  transition: background 0.2s;
+}
+.dot.on { background: var(--accent); }
+
+.hearts { display: flex; gap: 2px; font-size: 24px; line-height: 1; }
+.heart { color: var(--heart-empty); transition: color 0.2s; }
+.heart.full { color: var(--heart); }
+.heart.lost { animation: lost 0.6s ease-out; }
+.heart.gain { animation: gain 0.7s ease-out; }
+@keyframes lost {
+  0% { transform: scale(1.5) rotate(-12deg); color: var(--heart); }
+  40% { transform: scale(0.7) rotate(10deg); }
+  100% { transform: none; }
+}
+@keyframes gain {
+  0% { transform: scale(0.2); }
+  60% { transform: scale(1.6); }
+  100% { transform: none; }
+}
+
+.tools { margin-left: auto; display: flex; gap: 8px; }
+
+button {
+  font: inherit;
+  font-size: 16px;
+  padding: 10px 16px;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+}
+button:active { transform: translateY(1px); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 700; }
+
+/* ---------- 두 그림 ---------- */
+
+.board {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 14px;
+}
+.pic {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pic svg {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  cursor: pointer;
+  touch-action: manipulation;
+  overflow: visible;
+}
+.pic .scene { clip-path: url(#frame); }
+
+@media (orientation: portrait) {
+  .board { flex-direction: column; }
+}
+
+.board.shake { animation: shake 0.35s; }
+@keyframes shake {
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(7px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(3px); }
+}
+
+/* 색연필 동그라미가 그려지는 연출. 길이(--len)는 app.js 가 path 마다 잰다. */
+.circle {
+  fill: none;
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-opacity: 0.9;
+  filter: url(#crayon);
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: draw 0.4s ease-out forwards;
+}
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+.miss-mark {
+  stroke: #2b2a26;
+  stroke-width: 7;
+  stroke-linecap: round;
+  animation: fade 0.7s ease-out forwards;
+}
+@keyframes fade {
+  0% { opacity: 0.9; transform: scale(0.6); }
+  30% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; }
+}
+.miss-mark { transform-box: fill-box; transform-origin: center; }
+
+.foot { color: var(--muted); font-size: 13px; text-align: center; }
+#seedOut { font-variant-numeric: tabular-nums; }
+
+/* ---------- 판 끝 / 게임 오버 ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(43, 42, 38, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: appear 0.25s ease-out;
+}
+.overlay[hidden] { display: none; }
+@keyframes appear { from { opacity: 0; } }
+.card {
+  background: var(--card);
+  border-radius: 22px;
+  padding: 26px 30px;
+  text-align: center;
+  width: min(380px, 100%);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.2);
+}
+.card .big { font-size: 64px; line-height: 1; }
+.card h2 { margin: 10px 0 6px; font-size: 28px; }
+.card p { margin: 0 0 20px; color: var(--muted); font-size: 17px; line-height: 1.5; }
+.card button { width: 100%; font-size: 19px; }
+
+.defs { position: absolute; width: 0; height: 0; }
+
+@media (max-width: 560px) {
+  #app { padding: 10px 16px; gap: 8px; }
+  .hud h1 { font-size: 18px; }
+  .hearts { font-size: 20px; }
+  .tools { margin-left: 0; }
+}
