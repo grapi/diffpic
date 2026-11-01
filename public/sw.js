@@ -1,6 +1,6 @@
 // 오프라인용 캐시. 한 번 열어두면 인터넷이 끊겨도 게임이 그대로 돌아간다.
 // 파일을 고친 뒤에는 CACHE 이름의 숫자를 올려야 태블릿이 새 버전을 받는다.
-const CACHE = 'diffpic-v1';
+const CACHE = 'diffpic-v2';
 
 const ASSETS = [
   '.',
@@ -8,8 +8,10 @@ const ASSETS = [
   'style.css',
   'app.js',
   'lib/rng.js',
-  'lib/shapes.js',
-  'lib/scene.js',
+  'lib/art.js',
+  'lib/scenes/living.js',
+  'lib/scenes/picnic.js',
+  'lib/scenes/kitchen.js',
   'lib/diff.js',
   'lib/crayon.js',
   'lib/game.js',

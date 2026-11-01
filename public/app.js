@@ -1,5 +1,5 @@
-import { makePuzzle, findSpot } from './lib/diff.js';
-import { renderScene, W, H } from './lib/scene.js';
+import { makePuzzle, findSpot, SCENES } from './lib/diff.js';
+import { W, H } from './lib/art.js';
 import { newGame, hit, miss, nextStage, reroll, MAX_LIVES, SPOTS } from './lib/game.js';
 import { crayonPath, CRAYON_COLORS } from './lib/crayon.js';
 import { makeRng } from './lib/rng.js';
@@ -21,6 +21,9 @@ const MISS_COOLDOWN_MS = 400;
 
 let game = newGame();
 let puzzle = null;
+// 장면은 섞어 둔 순서대로 돌아가며 나온다. 판이 넘어가거나 '새 그림'을 누를 때마다 다음 장면.
+let sceneOrder = [];
+let sceneTurn = 0;
 let missBlockedUntil = 0;
 let onOverlayButton = null;
 
@@ -29,12 +32,17 @@ const seedLabel = (seed) => seed.toString(36).toUpperCase();
 
 // ---------- 그림 ----------
 
+function shuffleScenes() {
+  sceneOrder = makeRng(randSeed()).shuffle(SCENES.map((_, i) => i));
+  sceneTurn = 0;
+}
+
 function loadPuzzle() {
-  puzzle = makePuzzle(randSeed(), game.stage);
-  els.left.querySelector('.scene').innerHTML = renderScene(puzzle.left);
-  els.right.querySelector('.scene').innerHTML = renderScene(puzzle.right);
+  puzzle = makePuzzle(randSeed(), sceneOrder[sceneTurn++ % sceneOrder.length]);
+  els.left.querySelector('.scene').innerHTML = puzzle.left;
+  els.right.querySelector('.scene').innerHTML = puzzle.right;
   for (const svg of pics) svg.querySelector('.marks').replaceChildren();
-  els.seedOut.textContent = seedLabel(puzzle.seed);
+  els.seedOut.textContent = `${puzzle.title} #${seedLabel(puzzle.seed)}`;
   renderHud();
 }
 
@@ -114,6 +122,7 @@ function goNext() {
 
 function restart() {
   game = newGame();
+  shuffleScenes();
   loadPuzzle();
 }
 
@@ -213,4 +222,5 @@ if ('serviceWorker' in navigator) {
 }
 
 syncSoundButton();
+shuffleScenes();
 loadPuzzle();

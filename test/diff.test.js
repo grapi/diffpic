@@ -1,66 +1,87 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { makePuzzle, findSpot, DIFF_COUNT } from '../public/lib/diff.js';
-import { renderScene, W, H } from '../public/lib/scene.js';
-import { drawObject } from '../public/lib/shapes.js';
+import { makePuzzle, findSpot, SCENES, DIFF_COUNT } from '../public/lib/diff.js';
+import { W, H } from '../public/lib/art.js';
 
 const SEEDS = Array.from({ length: 300 }, (_, i) => i * 7919 + 1);
-const STAGES = [1, 4, 8, 15];
 
 function each(fn) {
-  for (const stage of STAGES) for (const seed of SEEDS) fn(makePuzzle(seed, stage), seed, stage);
+  SCENES.forEach((scene, si) => {
+    for (const seed of SEEDS) fn(makePuzzle(seed, si), scene, seed);
+  });
 }
 
-test('같은 시드·판이면 같은 퍼즐', () => {
-  for (const seed of SEEDS.slice(0, 30)) {
-    const a = makePuzzle(seed, 3);
-    const b = makePuzzle(seed, 3);
-    assert.deepEqual(a, b);
-    assert.equal(renderScene(a.left), renderScene(b.left));
-    assert.equal(renderScene(a.right), renderScene(b.right));
+test('장면마다 후보가 충분하고 id 가 겹치지 않는다', () => {
+  for (const scene of SCENES) {
+    assert.ok(scene.diffs.length >= 15, `${scene.id}: 후보 ${scene.diffs.length}개`);
+    assert.equal(new Set(scene.diffs.map((d) => d.id)).size, scene.diffs.length, scene.id);
   }
 });
 
-test('퍼즐의 seed 로 다시 만들면 같은 퍼즐 (화면에 보이는 그림 번호로 재현)', () => {
-  for (const seed of SEEDS.slice(0, 30)) {
-    const p = makePuzzle(seed, 2);
-    assert.deepEqual(makePuzzle(p.seed, 2), p);
+test('후보 하나하나가 실제로 그림을 바꾼다', () => {
+  for (const scene of SCENES) {
+    const base = scene.draw(new Set());
+    for (const d of scene.diffs) {
+      assert.notEqual(scene.draw(new Set([d.id])), base, `${scene.id}.${d.id} 를 켜도 그림이 그대로`);
+    }
   }
 });
 
-test('틀린 곳은 정확히 5개, 종류는 모두 다르다', () => {
-  each((p, seed, stage) => {
-    assert.equal(p.spots.length, DIFF_COUNT, `seed ${seed} stage ${stage}`);
-    assert.equal(new Set(p.spots.map((s) => s.type)).size, DIFF_COUNT);
-    assert.equal(new Set(p.spots.map((s) => s.id)).size, DIFF_COUNT);
+test('후보끼리 서로 다른 부분을 바꾼다', () => {
+  for (const scene of SCENES) {
+    const outs = scene.diffs.map((d) => scene.draw(new Set([d.id])));
+    assert.equal(new Set(outs).size, outs.length, scene.id);
+  }
+});
+
+test('판정 원의 중심이 그림 안에 있다', () => {
+  for (const scene of SCENES) {
+    for (const d of scene.diffs) {
+      assert.ok(d.cx > 0 && d.cx < W && d.cy > 0 && d.cy < H && d.r >= 20, `${scene.id}.${d.id}`);
+    }
+  }
+});
+
+test('같은 시드·장면이면 같은 퍼즐, 퍼즐의 seed 로 다시 만들어도 같다', () => {
+  SCENES.forEach((_, si) => {
+    for (const seed of SEEDS.slice(0, 30)) {
+      const p = makePuzzle(seed, si);
+      assert.deepEqual(makePuzzle(seed, si), p);
+      assert.deepEqual(makePuzzle(p.seed, si), p);
+    }
   });
 });
 
-test('판정 원은 서로 겹치지 않고 중심이 그림 안에 있다', () => {
-  each((p, seed, stage) => {
+test('틀린 곳은 정확히 5개이고 판정 원끼리 겹치지 않는다', () => {
+  each((p, scene, seed) => {
+    assert.equal(p.spots.length, DIFF_COUNT, `${scene.id} seed ${seed}`);
+    assert.equal(new Set(p.spots.map((s) => s.id)).size, DIFF_COUNT);
     for (const [i, a] of p.spots.entries()) {
-      assert.ok(a.cx > 0 && a.cx < W && a.cy > 0 && a.cy < H, `seed ${seed} stage ${stage} spot ${i}`);
       for (const b of p.spots.slice(i + 1)) {
-        assert.ok(Math.hypot(a.cx - b.cx, a.cy - b.cy) >= a.r + b.r, `seed ${seed} stage ${stage}`);
+        assert.ok(Math.hypot(a.cx - b.cx, a.cy - b.cy) >= a.r + b.r, `${scene.id} seed ${seed}: ${a.id} / ${b.id}`);
       }
     }
   });
 });
 
-test('틀린 곳의 물체만 다르고 나머지는 완전히 같다', () => {
-  each((p, seed, stage) => {
-    const L = new Map(p.left.objects.map((o) => [o.id, drawObject(o)]));
-    const R = new Map(p.right.objects.map((o) => [o.id, drawObject(o)]));
-    const changed = new Set(p.spots.map((s) => s.id));
-    for (const id of new Set([...L.keys(), ...R.keys()])) {
-      if (changed.has(id)) assert.notEqual(L.get(id), R.get(id), `seed ${seed} stage ${stage} id ${id}`);
-      else assert.equal(L.get(id), R.get(id), `seed ${seed} stage ${stage} id ${id}`);
-    }
+test('오른쪽 그림 = 원본에 고른 5곳만 바꾼 그림', () => {
+  each((p, scene) => {
+    const strip = (s, k) => s.replaceAll(`id="${k}-`, 'id="').replaceAll(`url(#${k}-`, 'url(#');
+    assert.equal(strip(p.left, 'L'), scene.draw(new Set()));
+    assert.equal(strip(p.right, 'R'), scene.draw(new Set(p.spots.map((s) => s.id))));
   });
 });
 
+test('왼쪽·오른쪽 그림의 id 가 서로 겹치지 않는다', () => {
+  const p = makePuzzle(1, 0);
+  const ids = (s) => [...s.matchAll(/id="([^"]+)"/g)].map((m) => m[1]);
+  const left = new Set(ids(p.left));
+  assert.ok(left.size > 0);
+  for (const id of ids(p.right)) assert.ok(!left.has(id), id);
+});
+
 test('findSpot: 판정 원 안이면 그 번호, 밖이면 -1', () => {
-  const p = makePuzzle(42, 1);
+  const p = makePuzzle(42, 0);
   p.spots.forEach((s, i) => {
     assert.equal(findSpot(p.spots, s.cx, s.cy), i);
     assert.equal(findSpot(p.spots, s.cx + s.r * 0.95, s.cy), i);
