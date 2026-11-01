@@ -112,10 +112,6 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 }
 .pic .scene { clip-path: url(#frame); }
 
-@media (orientation: portrait) {
-  .board { flex-direction: column; }
-}
-
 .board.shake { animation: shake 0.35s; }
 @keyframes shake {
   20% { transform: translateX(-8px); }

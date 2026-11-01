@@ -27,8 +27,8 @@
   </header>
 
   <main class="board" id="board">
-    <div class="pic"><svg id="left" viewBox="0 0 800 600" aria-label="왼쪽 그림"><g class="scene"></g><g class="marks"></g></svg></div>
-    <div class="pic"><svg id="right" viewBox="0 0 800 600" aria-label="오른쪽 그림"><g class="scene"></g><g class="marks"></g></svg></div>
+    <div class="pic"><svg id="left" viewBox="0 0 600 800" aria-label="왼쪽 그림"><g class="scene"></g><g class="marks"></g></svg></div>
+    <div class="pic"><svg id="right" viewBox="0 0 600 800" aria-label="오른쪽 그림"><g class="scene"></g><g class="marks"></g></svg></div>
   </main>
 
   <footer class="foot">두 그림에서 <b>다른 곳 5군데</b>를 찾아 누르세요. 아무 데나 누르면 ❤️ 가 줄어요. · <span id="seedOut"></span></footer>
@@ -37,7 +37,7 @@
 <!-- 두 그림이 함께 쓰는 정의. display:none 이면 필터가 안 먹는 브라우저가 있어 크기 0 으로 숨긴다. -->
 <svg class="defs" width="0" height="0" aria-hidden="true">
   <defs>
-    <clipPath id="frame"><rect width="800" height="600" rx="22"/></clipPath>
+    <clipPath id="frame"><rect width="600" height="800" rx="22"/></clipPath>
     <filter id="crayon" x="-20%" y="-20%" width="140%" height="140%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="noise"/>
       <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>

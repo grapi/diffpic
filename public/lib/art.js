@@ -1,8 +1,8 @@
 // 장면 일러스트에 쓰는 공용 그리기 도구. 굵은 외곽선 + 단색 면 + 볼터치의 플랫 일러스트 스타일.
 // 모든 함수는 SVG 문자열을 돌려준다. 브라우저와 Node(테스트) 양쪽에서 그대로 import 된다.
 
-export const W = 800;
-export const H = 600;
+export const W = 600;
+export const H = 800;
 export const INK = '#26213a';
 export const SKIN = '#ffd8c2';
 export const BLUSH = '#ff8a8a';

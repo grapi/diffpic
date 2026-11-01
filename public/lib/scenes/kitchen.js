@@ -2,13 +2,16 @@
 
 import { W, H, INK, OL, pick, blob, tube, heart, cat, clock, person, headPos } from '../art.js';
 
-const DAD = { x: 268, y: 452, s: 1.05, legs: false, hairStyle: 'chef', hair: '#3a2630', top: '#ffffff', mustache: '#3a2630', arms: [-20, 62], mouth: 'open' };
-const KID = { x: 468, y: 440, s: 0.72, hs: 1.25, legs: false, hairStyle: 'bun', hair: '#3a2630', top: '#7fd0f0', arms: [-28, -28] };
+const DAD = { x: 140, y: 620, s: 1.15, legs: false, hairStyle: 'chef', hair: '#3a2630', top: '#ffffff', mustache: '#3a2630', arms: [-20, 75], mouth: 'open' };
+const KID = { x: 370, y: 602, s: 0.8, hs: 1.25, legs: false, hairStyle: 'bun', hair: '#3a2630', top: '#7fd0f0', arms: [-28, -28] };
 
 const dadHead = headPos(DAD);
 const kidHead = headPos(KID);
-const POT = { x: 358, y: 396 };
-const BOWL = { x: KID.x, y: 400 };
+const COUNTER_DY = 158; // 조리대(와 그 위 물건)를 원래 그린 자리에서 내린 만큼
+const POT = { x: 262, y: 554 };
+const BOWL = { x: KID.x, y: 558 };
+const FRIDGE = { x: 424, y: 290 };
+const EGGS = { dx: -40, dy: -104 }; // 냉장고 위 달걀판
 const JARS = [64, 116, 168];
 const CLOCK = { x: 540, y: 96 };
 
@@ -18,18 +21,18 @@ const diffs = [
   { id: 'shelfCup', label: '선반 위 컵', cx: 214, cy: 128, r: 24 },
   { id: 'clock', label: '시곗바늘', cx: CLOCK.x, cy: CLOCK.y, r: 42 },
   { id: 'utensil', label: '걸려 있는 뒤집개', cx: 104, cy: 262, r: 28 },
-  { id: 'chefHat', label: '요리사 모자 높이', cx: dadHead.x, cy: dadHead.y - 72, r: 40 },
-  { id: 'apron', label: '아빠 앞치마 색', cx: DAD.x - 6, cy: 366, r: 28 },
+  { id: 'chefHat', label: '요리사 모자 높이', cx: dadHead.x, cy: dadHead.y - 79, r: 44 },
+  { id: 'apron', label: '아빠 앞치마 색', cx: DAD.x + 8, cy: DAD.y - 115, r: 28 },
   { id: 'potColor', label: '냄비 색', cx: POT.x, cy: POT.y - 12, r: 32 },
   { id: 'steam', label: '냄비 김', cx: POT.x + 4, cy: POT.y - 70, r: 28 },
   { id: 'bowlColor', label: '그릇 색', cx: BOWL.x, cy: BOWL.y - 4, r: 30 },
-  { id: 'kidBow', label: '아이 리본', cx: kidHead.x + 22, cy: kidHead.y - 28, r: 22 },
-  { id: 'carrot', label: '도마 위 당근', cx: 120, cy: 382, r: 24 },
-  { id: 'egg', label: '달걀 개수', cx: 560, cy: 384, r: 26 },
-  { id: 'kettle', label: '주전자 색', cx: 46, cy: 368, r: 30 },
-  { id: 'magnet', label: '냉장고 하트 자석', cx: 640, cy: 214, r: 22 },
-  { id: 'drawing', label: '냉장고 그림 속 해', cx: 688, cy: 352, r: 30 },
-  { id: 'catCollar', label: '고양이 목걸이', cx: 470, cy: 556, r: 26 },
+  { id: 'kidBow', label: '아이 리본', cx: kidHead.x + 24, cy: kidHead.y - 32, r: 22 },
+  { id: 'carrot', label: '도마 위 당근', cx: 116, cy: 382 + COUNTER_DY, r: 24 },
+  { id: 'egg', label: '달걀 개수', cx: 560 + EGGS.dx, cy: 384 + EGGS.dy, r: 26 },
+  { id: 'kettle', label: '주전자 색', cx: 46, cy: 368 + COUNTER_DY, r: 30 },
+  { id: 'magnet', label: '냉장고 하트 자석', cx: FRIDGE.x + 44, cy: FRIDGE.y + 58, r: 22 },
+  { id: 'drawing', label: '냉장고 그림 속 해', cx: FRIDGE.x + 66, cy: FRIDGE.y + 200, r: 30 },
+  { id: 'catCollar', label: '고양이 목걸이', cx: 300, cy: 755, r: 26 },
 ];
 
 function room() {
@@ -39,10 +42,10 @@ function room() {
     `<pattern id="kt-floor" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#ffe0cc"/>` +
     `<rect width="30" height="30" fill="#ffb899"/><rect x="30" y="30" width="30" height="30" fill="#ffb899"/></pattern></defs>` +
     `<rect width="${W}" height="${H}" fill="#ffd36b"/>` +
-    `<rect y="230" width="580" height="180" fill="url(#kt-tile)"/>` +
-    `<path d="M0 230H580" ${OL(3)}/>` +
-    `<rect y="520" width="${W}" height="${H - 520}" fill="url(#kt-floor)"/>` +
-    `<path d="M0 520H800" ${OL()}/>`
+    `<rect y="230" width="${W}" height="330" fill="url(#kt-tile)"/>` +
+    `<path d="M0 230H${W}" ${OL(3)}/>` +
+    `<rect y="680" width="${W}" height="${H - 680}" fill="url(#kt-floor)"/>` +
+    `<path d="M0 680H${W}" ${OL()}/>`
   );
 }
 
@@ -88,40 +91,46 @@ function utensils(v) {
 
 function fridge(v) {
   return (
-    `<rect x="596" y="160" width="176" height="370" rx="22" fill="#bfe6ff" ${OL()}/>` +
-    `<path d="M596 292H772" ${OL()}/>` +
-    `<rect x="606" y="220" width="10" height="50" rx="5" fill="#ffffff" ${OL(3)}/>` +
-    `<rect x="606" y="310" width="10" height="70" rx="5" fill="#ffffff" ${OL(3)}/>` +
-    pick(v, 'magnet', heart(640, 216, 26, '#ff5b8a'), '') +
-    `<path d="M720 196L726 210L741 211L729 220L733 235L720 226L707 235L711 220L699 211L714 210Z" fill="#ffd23f" ${OL(3)}/>` +
+    `<g transform="translate(${FRIDGE.x} ${FRIDGE.y})">` +
+    `<rect x="0" y="0" width="164" height="390" rx="22" fill="#bfe6ff" ${OL()}/>` +
+    `<path d="M0 120H164" ${OL()}/>` +
+    `<rect x="10" y="50" width="10" height="50" rx="5" fill="#ffffff" ${OL(3)}/>` +
+    `<rect x="10" y="140" width="10" height="70" rx="5" fill="#ffffff" ${OL(3)}/>` +
+    pick(v, 'magnet', heart(44, 60, 26, '#ff5b8a'), '') +
+    `<path d="M122 40L128 54L143 55L131 64L135 79L122 70L109 79L113 64L101 55L116 54Z" fill="#ffd23f" ${OL(3)}/>` +
     // 아이 그림
-    `<rect x="646" y="316" width="100" height="78" fill="#fff" ${OL()}/>` +
-    `<circle cx="688" cy="304" r="7" fill="#ff5b5b" ${OL(3)}/>` +
-    `<circle cx="672" cy="342" r="11" fill="${pick(v, 'drawing', '#ffd23f', '#ff5b5b')}" stroke="#ffb627" stroke-width="2"/>` +
-    `<path d="M652 384L684 352L702 370L716 356L740 384Z" fill="#5cc46e" stroke="#3c9d5d" stroke-width="2"/>` +
-    `<path d="M710 334Q716 328 722 334Q728 328 734 334" fill="none" stroke="${INK}" stroke-width="2"/>`
+    `<rect x="32" y="170" width="100" height="78" fill="#fff" ${OL()}/>` +
+    `<circle cx="74" cy="158" r="7" fill="#ff5b5b" ${OL(3)}/>` +
+    `<circle cx="58" cy="196" r="11" fill="${pick(v, 'drawing', '#ffd23f', '#ff5b5b')}" stroke="#ffb627" stroke-width="2"/>` +
+    `<path d="M38 238L70 206L88 224L102 210L126 238Z" fill="#5cc46e" stroke="#3c9d5d" stroke-width="2"/>` +
+    `<path d="M96 188Q102 182 108 188Q114 182 120 188" fill="none" stroke="${INK}" stroke-width="2"/>` +
+    `</g>` +
+    // 냉장고 위 달걀판
+    `<g transform="translate(${EGGS.dx} ${EGGS.dy})">` +
+    `<path d="M528 394Q528 382 538 380L582 380Q592 382 592 394Z" fill="#c9b8a0" ${OL(3)}/>` +
+    (v.has('egg') ? [546, 574] : [542, 560, 578]).map((x) => `<ellipse cx="${x}" cy="374" rx="8" ry="11" fill="#fff8ec" ${OL(3)}/>`).join('') +
+    `</g>`
   );
 }
 
 function counter(v) {
   return (
-    `<rect x="-10" y="404" width="586" height="120" fill="#5ab4e8" ${OL()}/>` +
-    [0, 1, 2, 3].map((i) =>
-      `<rect x="${12 + i * 140}" y="424" width="122" height="86" rx="8" fill="#6fc2f0" ${OL(3)}/>` +
-      `<rect x="${55 + i * 140}" y="438" width="36" height="8" rx="4" fill="#fff" ${OL(2.5)}/>`
+    `<g transform="translate(0 ${COUNTER_DY})">` +
+    `<rect x="-10" y="404" width="434" height="120" fill="#5ab4e8" ${OL()}/>` +
+    [0, 1, 2].map((i) =>
+      `<rect x="${12 + i * 136}" y="424" width="122" height="86" rx="8" fill="#6fc2f0" ${OL(3)}/>` +
+      `<rect x="${55 + i * 136}" y="438" width="36" height="8" rx="4" fill="#fff" ${OL(2.5)}/>`
     ).join('') +
-    `<rect x="-10" y="394" width="596" height="18" rx="4" fill="#f4f1ea" ${OL()}/>` +
+    `<rect x="-10" y="394" width="438" height="18" rx="4" fill="#f4f1ea" ${OL()}/>` +
     // 주전자
     `<path d="M22 394Q16 352 46 346Q76 352 70 394Z" fill="${pick(v, 'kettle', '#ff5b5b', '#5cc46e')}" ${OL()}/>` +
     `<path d="M70 380L90 360" ${OL(6)}/><path d="M30 352Q46 326 62 352" fill="none" ${OL(4)}/>` +
     `<circle cx="46" cy="342" r="5" fill="${INK}"/>` +
     // 도마와 당근·토마토
-    `<rect x="94" y="386" width="110" height="10" rx="4" fill="#d9a35b" ${OL(3)}/>` +
-    pick(v, 'carrot', `<path d="M104 384L140 376L140 388Z" fill="#ff8a3d" ${OL(2.5)}/><path d="M140 380L150 372M140 382L152 380" stroke="#3c9d5d" stroke-width="3" stroke-linecap="round"/>`, '') +
-    `<circle cx="178" cy="374" r="12" fill="#ff5b5b" ${OL(3)}/><path d="M172 364L178 368L184 364" stroke="#3c9d5d" stroke-width="3" fill="none"/>` +
-    // 달걀
-    `<path d="M528 394Q528 382 538 380L582 380Q592 382 592 394Z" fill="#c9b8a0" ${OL(3)}/>` +
-    (v.has('egg') ? [546, 574] : [542, 560, 578]).map((x) => `<ellipse cx="${x}" cy="374" rx="8" ry="11" fill="#fff8ec" ${OL(3)}/>`).join('')
+    `<rect x="92" y="386" width="96" height="10" rx="4" fill="#d9a35b" ${OL(3)}/>` +
+    pick(v, 'carrot', `<path d="M100 384L136 376L136 388Z" fill="#ff8a3d" ${OL(2.5)}/><path d="M136 380L146 372M136 382L148 380" stroke="#3c9d5d" stroke-width="3" stroke-linecap="round"/>`, '') +
+    `<circle cx="168" cy="374" r="12" fill="#ff5b5b" ${OL(3)}/><path d="M162 364L168 368L174 364" stroke="#3c9d5d" stroke-width="3" fill="none"/>` +
+    `</g>`
   );
 }
 
@@ -162,7 +171,7 @@ function draw(v) {
     counter(v) +
     pot(v) +
     bowl(v) +
-    cat(470, 596, 0.78, '#9e9e9e', { collar: pick(v, 'catCollar', '#ff5b5b', null) })
+    cat(300, 792, 0.85, '#9e9e9e', { collar: pick(v, 'catCollar', '#ff5b5b', null) })
   );
 }
 
