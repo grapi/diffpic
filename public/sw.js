@@ -1,6 +1,6 @@
 // 오프라인용 캐시. 한 번 열어두면 인터넷이 끊겨도 게임이 그대로 돌아간다.
 // 파일을 고친 뒤에는 CACHE 이름의 숫자를 올려야 태블릿이 새 버전을 받는다.
-const CACHE = 'diffpic-v5';
+const CACHE = 'diffpic-v6';
 
 const ASSETS = [
   '.',
@@ -40,7 +40,8 @@ self.addEventListener('install', (e) => {
   e.waitUntil(
     caches
       .open(CACHE)
-      .then((c) => c.addAll(ASSETS))
+      // 브라우저 HTTP 캐시를 거치면(GitHub Pages 는 10분) 옛 파일이 새 캐시에 섞여 화면이 깨진다.
+      .then((c) => c.addAll(ASSETS.map((url) => new Request(url, { cache: 'reload' }))))
       .then(() => self.skipWaiting())
   );
 });
