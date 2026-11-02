@@ -4,8 +4,8 @@ const STORE_KEY = 'diffpic.records';
 export const MAX_RECORDS = 10;
 export const MAX_NAME = 10;
 
-export function cleanName(name) {
-  return [...String(name ?? '').trim()].slice(0, MAX_NAME).join('') || '이름 없음';
+export function cleanName(name, fallback = '이름 없음') {
+  return [...String(name ?? '').trim()].slice(0, MAX_NAME).join('') || fallback;
 }
 
 // 점수 높은 순. 점수가 같으면 먼저 세운 기록이 앞선다. rank 는 0 부터, 10위 밖이면 -1.

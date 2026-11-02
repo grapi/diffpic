@@ -36,4 +36,5 @@ test('이름은 앞뒤 공백을 지우고 길이를 자르며, 비면 기본 �
   assert.equal(cleanName(''), '이름 없음');
   assert.equal(cleanName('   '), '이름 없음');
   assert.equal([...cleanName('가'.repeat(30))].length, MAX_NAME);
+  assert.equal(cleanName(' ', '콩이'), '콩이');
 });

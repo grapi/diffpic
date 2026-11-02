@@ -238,9 +238,19 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 .final { font-size: 40px; font-weight: 800; color: var(--accent); margin-bottom: 12px; font-variant-numeric: tabular-nums; }
 .final:empty { display: none; }
 
-.rec-form { display: flex; gap: 8px; margin-bottom: 12px; }
-.rec-form[hidden] { display: none; }
-.rec-form input {
+.card .rec-btn { margin-bottom: 12px; }
+.card .rec-btn[hidden] { display: none; }
+
+.name-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(534px, 100%);
+  font-size: 18px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.name-field input {
   flex: 1;
   min-width: 0;
   font: inherit;
@@ -254,7 +264,6 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
   -webkit-user-select: text;
   user-select: text;
 }
-.card .rec-form button { width: auto; font-size: 17px; white-space: nowrap; }
 
 .records { list-style: none; margin: 0 0 14px; padding: 0; text-align: left; }
 .records[hidden] { display: none; }

@@ -2,7 +2,7 @@ import { makePuzzle, findSpot, SCENES } from './lib/diff.js';
 import { W, H } from './lib/art.js';
 import { newGame, hit, miss, nextStage, reroll, MAX_LIVES, SPOTS, PERFECT_POINTS } from './lib/game.js';
 import { CHARACTERS, characterSvg, findCharacter } from './lib/characters.js';
-import { addRecord, loadRecords, saveRecords } from './lib/records.js';
+import { addRecord, cleanName, loadRecords, saveRecords } from './lib/records.js';
 import { crayonPath, CRAYON_COLORS } from './lib/crayon.js';
 import { makeRng } from './lib/rng.js';
 import * as sound from './lib/sound.js';
@@ -16,9 +16,9 @@ const els = {
   scoreOut: $('scoreOut'), comboOut: $('comboOut'), avatar: $('avatar'),
   btnSound: $('btnSound'), btnNew: $('btnNew'),
   overlay: $('overlay'), ovEmoji: $('ovEmoji'), ovTitle: $('ovTitle'), ovMsg: $('ovMsg'), ovBtn: $('ovBtn'),
-  start: $('start'), charList: $('charList'), btnStart: $('btnStart'), btnRecords: $('btnRecords'),
+  start: $('start'), charList: $('charList'), playerName: $('playerName'), btnStart: $('btnStart'), btnRecords: $('btnRecords'),
   end: $('end'), endAvatar: $('endAvatar'), endTitle: $('endTitle'), endMsg: $('endMsg'), endScore: $('endScore'),
-  recForm: $('recForm'), recName: $('recName'), recList: $('recList'), recNone: $('recNone'), endBtn: $('endBtn'),
+  recBtn: $('recBtn'), recList: $('recList'), recNone: $('recNone'), endBtn: $('endBtn'),
 };
 const pics = [els.left, els.right];
 
@@ -45,6 +45,9 @@ function loadPlayer() {
     return { character: CHARACTERS[0].id, name: '' };
   }
 }
+
+// 이름을 비워 두면 고른 캐릭터의 이름을 쓴다.
+const playerName = () => cleanName(player.name, findCharacter(player.character).name);
 
 function savePlayer() {
   try {
@@ -241,8 +244,8 @@ function showEnd() {
   els.endTitle.textContent = completed ? '완주했어요!' : '게임 오버';
   els.endMsg.textContent = completed ? `그림 ${game.stages}개를 모두 찾았어요.` : `${game.stage}판까지 왔어요.`;
   els.endScore.textContent = `${game.score.toLocaleString()}점`;
-  els.recForm.hidden = false;
-  els.recName.value = player.name;
+  els.recBtn.hidden = false;
+  els.recBtn.textContent = `'${playerName()}' 이름으로 기록하기`;
   renderRecords(loadRecords());
   els.endBtn.textContent = '기록하지 않고 처음으로';
   els.end.hidden = false;
@@ -253,16 +256,15 @@ function showRecordsOnly() {
   els.endTitle.textContent = '🏆 기록';
   els.endMsg.textContent = '이 기기에서 세운 점수 상위 10개예요.';
   els.endScore.textContent = '';
-  els.recForm.hidden = true;
+  els.recBtn.hidden = true;
   renderRecords(loadRecords());
   els.endBtn.textContent = '닫기';
   els.end.hidden = false;
 }
 
-els.recForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+els.recBtn.addEventListener('click', () => {
   const { records, rank } = addRecord(loadRecords(), {
-    name: els.recName.value,
+    name: playerName(),
     character: player.character,
     score: game.score,
     stage: game.stage,
@@ -270,10 +272,7 @@ els.recForm.addEventListener('submit', (e) => {
     date: new Date().toISOString().slice(0, 10),
   });
   saveRecords(records);
-  player.name = els.recName.value.trim();
-  savePlayer();
-  els.recForm.hidden = true;
-  els.recName.blur();
+  els.recBtn.hidden = true;
   renderRecords(records, rank);
   els.endMsg.textContent = rank >= 0 ? `${rank + 1}위에 올랐어요!` : '아쉽게도 10위 안에 들지 못했어요.';
   els.endBtn.textContent = '처음으로';
@@ -287,6 +286,7 @@ els.endBtn.addEventListener('click', () => {
 // ---------- 시작 화면 ----------
 
 function renderChars() {
+  els.playerName.placeholder = `비워 두면 '${findCharacter(player.character).name}'`;
   els.charList.replaceChildren(
     ...CHARACTERS.map((c) => {
       const on = c.id === player.character;
@@ -312,6 +312,7 @@ function renderChars() {
 }
 
 function showStart() {
+  els.playerName.value = player.name;
   renderChars();
   els.start.hidden = false;
 }
@@ -324,6 +325,14 @@ function startGame() {
   loadPuzzle();
   els.start.hidden = true;
 }
+
+els.playerName.addEventListener('input', () => {
+  player.name = els.playerName.value;
+  savePlayer();
+});
+els.playerName.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') els.playerName.blur(); // 태블릿 키보드를 닫는다
+});
 
 els.btnStart.addEventListener('click', startGame);
 els.btnRecords.addEventListener('click', showRecordsOnly);

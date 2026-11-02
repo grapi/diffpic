@@ -62,10 +62,7 @@
     <h2 id="endTitle"></h2>
     <p id="endMsg"></p>
     <div class="final" id="endScore"></div>
-    <form id="recForm" class="rec-form">
-      <input id="recName" type="text" maxlength="10" placeholder="이름을 적어 주세요" autocomplete="off" aria-label="이름">
-      <button type="submit" class="primary">기록하기</button>
-    </form>
+    <button id="recBtn" type="button" class="primary rec-btn"></button>
     <ol class="records" id="recList"></ol>
     <p class="none" id="recNone" hidden>아직 기록이 없어요.</p>
     <button id="endBtn" type="button"></button>
@@ -76,6 +73,9 @@
   <h1>🔍 틀린그림 찾기</h1>
   <p>함께 찾을 친구를 골라 주세요</p>
   <div class="chars" id="charList" role="radiogroup" aria-label="캐릭터"></div>
+  <label class="name-field">이름
+    <input id="playerName" type="text" maxlength="10" enterkeyhint="done" autocomplete="off">
+  </label>
   <div class="start-row">
     <button id="btnStart" type="button" class="primary">시작하기 ▶</button>
     <button id="btnRecords" type="button">🏆 기록 보기</button>
