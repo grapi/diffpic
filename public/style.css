@@ -40,11 +40,35 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 18px;
+  gap: 8px 14px;
 }
-.hud h1 { margin: 0; font-size: 22px; letter-spacing: -0.02em; white-space: nowrap; }
+.avatar { width: 46px; height: 46px; flex: none; overflow: visible; }
+.avatar.bump { animation: bump 0.45s ease-out; }
+.avatar.droop { animation: droop 0.5s ease-out; }
+@keyframes bump {
+  40% { transform: translateY(-7px) scale(1.14); }
+}
+@keyframes droop {
+  25% { transform: rotate(-10deg); }
+  60% { transform: rotate(8deg); }
+}
 .stage { font-size: 18px; white-space: nowrap; }
 .stage b { font-size: 22px; }
+.stage .of { color: var(--muted); font-size: 15px; }
+
+.score { font-size: 16px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.score b { font-size: 24px; color: var(--accent); }
+.combo {
+  background: #ff8a3d;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.combo[hidden] { display: none; }
+.combo.pop { animation: gain 0.4s ease-out; }
 
 .dots { display: flex; gap: 6px; }
 .dot {
@@ -54,7 +78,7 @@ html, body {
 }
 .dot.on { background: var(--accent); }
 
-.hearts { display: flex; gap: 2px; font-size: 24px; line-height: 1; }
+.hearts { display: flex; gap: 1px; font-size: 22px; line-height: 1; }
 .heart { color: var(--heart-empty); transition: color 0.2s; }
 .heart.full { color: var(--heart); }
 .heart.lost { animation: lost 0.6s ease-out; }
@@ -147,6 +171,26 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 }
 .miss-mark { transform-box: fill-box; transform-origin: center; }
 
+/* 찾을 때 떠오르는 점수 */
+.points {
+  font-size: 40px;
+  font-weight: 800;
+  text-anchor: middle;
+  fill: #e8322b;
+  stroke: #fff;
+  stroke-width: 7;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  pointer-events: none;
+  animation: rise 0.9s ease-out forwards;
+}
+@keyframes rise {
+  0% { opacity: 0; transform: translateY(14px); }
+  20% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-36px); }
+}
+
 .foot { color: var(--muted); font-size: 13px; text-align: center; }
 #seedOut { font-variant-numeric: tabular-nums; }
 
@@ -160,6 +204,7 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
   align-items: center;
   justify-content: center;
   padding: 16px;
+  z-index: 2; /* 시작 화면의 '기록 보기' 도 그 위에 뜬다 */
   animation: appear 0.25s ease-out;
 }
 .overlay[hidden] { display: none; }
@@ -178,6 +223,100 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
 .card button { width: 100%; font-size: 19px; }
 
 .defs { position: absolute; width: 0; height: 0; }
+
+/* ---------- 끝난 뒤 점수와 기록 ---------- */
+
+.card.wide {
+  width: min(460px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: 20px 26px;
+}
+.big-avatar { width: 84px; height: 84px; }
+.card.wide h2 { margin-top: 4px; }
+.card.wide p { margin-bottom: 8px; }
+.final { font-size: 40px; font-weight: 800; color: var(--accent); margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+.final:empty { display: none; }
+
+.rec-form { display: flex; gap: 8px; margin-bottom: 12px; }
+.rec-form[hidden] { display: none; }
+.rec-form input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  font-size: 18px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  /* 화면 전체의 선택 막기를 입력칸에서는 풀어야 아이패드에서 글자가 들어간다 */
+  -webkit-user-select: text;
+  user-select: text;
+}
+.card .rec-form button { width: auto; font-size: 17px; white-space: nowrap; }
+
+.records { list-style: none; margin: 0 0 14px; padding: 0; text-align: left; }
+.records[hidden] { display: none; }
+.records li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 10px;
+  font-size: 16px;
+}
+.records li.mine { background: #ffe9c7; font-weight: 700; }
+.records .rank { width: 24px; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.records .face { width: 30px; height: 30px; flex: none; }
+.records .who { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.records .reach { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.records .pts { font-weight: 700; font-variant-numeric: tabular-nums; }
+.none { color: var(--muted); }
+.none[hidden] { display: none; }
+
+/* ---------- 시작 화면 ---------- */
+
+.screen {
+  position: fixed;
+  inset: 0;
+  overflow-y: auto;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px 16px;
+}
+.screen[hidden] { display: none; }
+.screen h1 { margin: 0; font-size: 38px; letter-spacing: -0.02em; }
+.screen p { margin: 0; font-size: 19px; color: var(--muted); }
+
+.chars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 170px));
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+}
+.char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px 10px;
+  border: 3px solid var(--line);
+  border-radius: 20px;
+  background: var(--card);
+  font-size: 18px;
+  font-weight: 700;
+}
+.char svg { width: min(92px, 18dvh); height: min(92px, 18dvh); overflow: visible; }
+.char.on { border-color: var(--accent); background: #fff0e8; }
+
+.start-row { display: flex; gap: 10px; margin-top: 4px; }
+.start-row button { font-size: 19px; padding: 12px 26px; }
 
 @media (max-width: 560px) {
   #app { padding: 10px 16px; gap: 8px; }

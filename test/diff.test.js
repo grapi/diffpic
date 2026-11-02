@@ -11,6 +11,11 @@ function each(fn) {
   });
 }
 
+test('장면은 15개 이상이고 id 가 겹치지 않는다', () => {
+  assert.ok(SCENES.length >= 15, `장면 ${SCENES.length}개`);
+  assert.equal(new Set(SCENES.map((s) => s.id)).size, SCENES.length);
+});
+
 test('장면마다 후보가 충분하고 id 가 겹치지 않는다', () => {
   for (const scene of SCENES) {
     assert.ok(scene.diffs.length >= 15, `${scene.id}: 후보 ${scene.diffs.length}개`);

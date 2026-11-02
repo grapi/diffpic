@@ -16,13 +16,15 @@
 
 <div id="app">
   <header class="hud">
-    <h1>🔍 틀린그림 찾기</h1>
-    <div class="stage">판 <b id="stageOut">1</b></div>
+    <svg class="avatar" id="avatar" viewBox="0 0 120 120" aria-hidden="true"></svg>
+    <div class="stage">판 <b id="stageOut">1</b><span class="of" id="stagesOut"></span></div>
     <div class="dots" id="dots" role="img" aria-label="찾은 개수"></div>
     <div class="hearts" id="hearts" role="img" aria-label="생명"></div>
+    <div class="score">점수 <b id="scoreOut">0</b></div>
+    <div class="combo" id="comboOut" hidden></div>
     <div class="tools">
       <button id="btnSound" type="button" aria-label="소리 켜기/끄기">🔊</button>
-      <button id="btnNew" type="button">새 그림</button>
+      <button id="btnNew" type="button">다시 섞기</button>
     </div>
   </header>
 
@@ -53,6 +55,32 @@
     <button id="ovBtn" type="button" class="primary"></button>
   </div>
 </div>
+
+<div id="end" class="overlay" hidden>
+  <div class="card wide">
+    <svg class="avatar big-avatar" id="endAvatar" viewBox="0 0 120 120" aria-hidden="true"></svg>
+    <h2 id="endTitle"></h2>
+    <p id="endMsg"></p>
+    <div class="final" id="endScore"></div>
+    <form id="recForm" class="rec-form">
+      <input id="recName" type="text" maxlength="10" placeholder="이름을 적어 주세요" autocomplete="off" aria-label="이름">
+      <button type="submit" class="primary">기록하기</button>
+    </form>
+    <ol class="records" id="recList"></ol>
+    <p class="none" id="recNone" hidden>아직 기록이 없어요.</p>
+    <button id="endBtn" type="button"></button>
+  </div>
+</div>
+
+<section id="start" class="screen">
+  <h1>🔍 틀린그림 찾기</h1>
+  <p>함께 찾을 친구를 골라 주세요</p>
+  <div class="chars" id="charList" role="radiogroup" aria-label="캐릭터"></div>
+  <div class="start-row">
+    <button id="btnStart" type="button" class="primary">시작하기 ▶</button>
+    <button id="btnRecords" type="button">🏆 기록 보기</button>
+  </div>
+</section>
 
 <script type="module" src="app.js"></script>
 </body>

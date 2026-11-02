@@ -1,6 +1,6 @@
 // 장면 2: 공원 소풍 — 돗자리 위의 엄마와 아이, 연 날리는 남자아이, 강아지.
 
-import { W, H, INK, OL, pick, blob, heart, sparkle, dog, person, headPos, handPos } from '../art.js';
+import { W, H, INK, OL, pick, blob, heart, sparkle, dog, person, headPos, handPos, bird, butterfly, flower } from '../art.js';
 
 const MOM = { x: 150, y: 700, s: 1, sit: true, hairStyle: 'sunhat', hair: '#5a3a2a', top: '#ff9fbd', bottom: '#7fd0f0', bottomType: 'skirt', arms: [10, 70], shoes: '#ffffff' };
 const GIRL = { x: 420, y: 712, s: 0.72, hs: 1.25, sit: true, hairStyle: 'bob', hair: '#5a3a2a', top: '#7b6cf6', bottom: '#ffd23f', bottomType: 'skirt', arms: [-10, 120], shoes: '#ff7aa8' };
@@ -88,17 +88,6 @@ function tree(v) {
   );
 }
 
-function bird(x, y, color) {
-  return (
-    `<path d="M${x - 14} ${y}L${x - 30} ${y - 10}L${x - 26} ${y + 8}Z" fill="${color}" ${OL(3)}/>` +
-    `<ellipse cx="${x}" cy="${y}" rx="20" ry="15" fill="${color}" ${OL()}/>` +
-    `<path d="M${x - 8} ${y}Q${x} ${y - 16} ${x + 8} ${y}Z" fill="#fff" ${OL(3)}/>` +
-    `<path d="M${x + 18} ${y - 4}L${x + 30} ${y}L${x + 18} ${y + 4}Z" fill="#ffb627" ${OL(2.5)}/>` +
-    `<circle cx="${x + 10}" cy="${y - 5}" r="2.5" fill="${INK}"/>` +
-    `<path d="M${x - 4} ${y + 15}V${y + 24}M${x + 4} ${y + 15}V${y + 24}" ${OL(3)}/>`
-  );
-}
-
 function kite(v) {
   const { x, y } = KITE;
   const t = [x, y - 58], r = [x + 42, y], b = [x, y + 70], l = [x - 42, y];
@@ -110,24 +99,6 @@ function kite(v) {
     `<path d="M${t[0]} ${t[1]}L${r[0]} ${r[1]}L${b[0]} ${b[1]}L${l[0]} ${l[1]}Z M${t[0]} ${t[1]}L${b[0]} ${b[1]}M${l[0]} ${l[1]}L${r[0]} ${r[1]}" fill="none" ${OL()}/>` +
     BOWS.map(([bx, by], i) => (i === 1 && v.has('kiteBow') ? '' :
       `<path d="M${bx} ${by}L${bx - 12} ${by - 8}L${bx - 12} ${by + 8}ZM${bx} ${by}L${bx + 12} ${by - 8}L${bx + 12} ${by + 8}Z" fill="#7b6cf6" ${OL(2.5)}/>`)).join('')
-  );
-}
-
-function butterfly(x, y, color) {
-  return (
-    `<ellipse cx="${x - 12}" cy="${y - 7}" rx="12" ry="10" fill="${color}" ${OL(3)}/><ellipse cx="${x + 12}" cy="${y - 7}" rx="12" ry="10" fill="${color}" ${OL(3)}/>` +
-    `<ellipse cx="${x - 9}" cy="${y + 9}" rx="8" ry="7" fill="${color}" ${OL(3)}/><ellipse cx="${x + 9}" cy="${y + 9}" rx="8" ry="7" fill="${color}" ${OL(3)}/>` +
-    `<ellipse cx="${x}" cy="${y}" rx="3.5" ry="15" fill="${INK}"/>` +
-    `<path d="M${x - 2} ${y - 14}Q${x - 6} ${y - 24} ${x - 10} ${y - 26}M${x + 2} ${y - 14}Q${x + 6} ${y - 24} ${x + 10} ${y - 26}" fill="none" ${OL(2)}/>`
-  );
-}
-
-function flower(x, y, color) {
-  return (
-    `<path d="M${x} ${y}V${y + 40}" stroke="#3c9d5d" stroke-width="5" stroke-linecap="round"/>` +
-    `<path d="M${x} ${y + 26}Q${x + 18} ${y + 14} ${x + 22} ${y + 22}Q${x + 12} ${y + 32} ${x} ${y + 28}Z" fill="#5cc46e" ${OL(2.5)}/>` +
-    blob([[x, y - 12, 10], [x + 12, y - 2, 10], [x + 7, y + 11, 10], [x - 7, y + 11, 10], [x - 12, y - 2, 10]], color, 3) +
-    `<circle cx="${x}" cy="${y}" r="7" fill="#ffd23f" ${OL(2.5)}/>`
   );
 }
 

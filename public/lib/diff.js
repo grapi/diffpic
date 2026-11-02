@@ -10,8 +10,22 @@ import { makeRng } from './rng.js';
 import living from './scenes/living.js';
 import picnic from './scenes/picnic.js';
 import kitchen from './scenes/kitchen.js';
+import classroom from './scenes/classroom.js';
+import beach from './scenes/beach.js';
+import playground from './scenes/playground.js';
+import camping from './scenes/camping.js';
+import snow from './scenes/snow.js';
+import undersea from './scenes/undersea.js';
+import space from './scenes/space.js';
+import farm from './scenes/farm.js';
+import bakery from './scenes/bakery.js';
+import amusement from './scenes/amusement.js';
+import bedroom from './scenes/bedroom.js';
+import zoo from './scenes/zoo.js';
 
-export const SCENES = [living, picnic, kitchen];
+export const SCENES = [
+  living, picnic, kitchen, classroom, beach, playground, camping, snow, undersea, space, farm, bakery, amusement, bedroom, zoo,
+];
 export const DIFF_COUNT = 5;
 const MAX_ATTEMPTS = 50;
 

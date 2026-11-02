@@ -140,6 +140,93 @@ export function clock(x, y, r, rim, hour, minute) {
   );
 }
 
+// ---------- 장면 공용 소품 ----------
+
+export const box = (x, y, w, h, fill, rx = 0, ol = 4) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}" ${OL(ol)}/>`;
+export const disc = (x, y, r, fill, ol = 4) => `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" ${OL(ol)}/>`;
+export const oval = (x, y, rx, ry, fill, ol = 4) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${fill}" ${OL(ol)}/>`;
+export const shape = (d, fill, ol = 4) => `<path d="${d}" fill="${fill}" ${OL(ol)}/>`;
+export const line = (d, w = 4) => `<path d="${d}" fill="none" ${OL(w)}/>`;
+
+export function cloud(x, y, s = 1) {
+  return blob([[x - 34 * s, y + 6 * s, 20 * s], [x - 8 * s, y - 8 * s, 28 * s], [x + 24 * s, y + 4 * s, 22 * s]], '#fff');
+}
+
+export function star(x, y, r, color, w = 3) {
+  const pts = Array.from({ length: 10 }, (_, i) => {
+    const a = -Math.PI / 2 + (i * Math.PI) / 5;
+    const k = i % 2 ? r * 0.45 : r;
+    return `${r1(x + Math.cos(a) * k)} ${r1(y + Math.sin(a) * k)}`;
+  });
+  return shape(`M${pts.join('L')}Z`, color, w);
+}
+
+export function sun(x, y, r, color = '#ffd23f') {
+  const rays = Array.from({ length: 10 }, (_, i) => {
+    const a = (i * Math.PI) / 5;
+    const [c, s] = [Math.cos(a), Math.sin(a)];
+    return `<path d="M${r1(x + c * (r + 8))} ${r1(y + s * (r + 8))}L${r1(x + c * (r + 22))} ${r1(y + s * (r + 22))}" stroke="#ffb627" stroke-width="6" stroke-linecap="round"/>`;
+  }).join('');
+  return rays + disc(x, y, r, color);
+}
+
+// 둥근 나무. (x, y) 는 줄기 바닥.
+export function tree(x, y, s = 1, leaf = '#4caf50') {
+  const c = (dx, dy, r) => [r1(x + dx * s), r1(y + dy * s), r1(r * s)];
+  return (
+    shape(`M${x - 18 * s} ${y}L${x - 13 * s} ${y - 110 * s}L${x + 13 * s} ${y - 110 * s}L${x + 18 * s} ${y}Z`, '#9c6b3e') +
+    blob([c(-44, -130, 44), c(44, -134, 42), c(0, -172, 54), c(-14, -106, 36), c(26, -104, 34)], leaf)
+  );
+}
+
+// 뾰족한 나무. (x, y) 는 줄기 바닥.
+export function pine(x, y, s = 1, color = '#2f8f5b') {
+  const layer = (top, half, h) => shape(`M${x} ${y - top * s}L${x + half * s} ${y - (top - h) * s}L${x - half * s} ${y - (top - h) * s}Z`, color);
+  return box(x - 9 * s, y - 30 * s, 18 * s, 30 * s, '#7a5236') + layer(100, 56, 74) + layer(150, 46, 72) + layer(195, 34, 66);
+}
+
+export function bird(x, y, color) {
+  return (
+    `<path d="M${x - 14} ${y}L${x - 30} ${y - 10}L${x - 26} ${y + 8}Z" fill="${color}" ${OL(3)}/>` +
+    `<ellipse cx="${x}" cy="${y}" rx="20" ry="15" fill="${color}" ${OL()}/>` +
+    `<path d="M${x - 8} ${y}Q${x} ${y - 16} ${x + 8} ${y}Z" fill="#fff" ${OL(3)}/>` +
+    `<path d="M${x + 18} ${y - 4}L${x + 30} ${y}L${x + 18} ${y + 4}Z" fill="#ffb627" ${OL(2.5)}/>` +
+    `<circle cx="${x + 10}" cy="${y - 5}" r="2.5" fill="${INK}"/>` +
+    `<path d="M${x - 4} ${y + 15}V${y + 24}M${x + 4} ${y + 15}V${y + 24}" ${OL(3)}/>`
+  );
+}
+
+export function butterfly(x, y, color) {
+  return (
+    `<ellipse cx="${x - 12}" cy="${y - 7}" rx="12" ry="10" fill="${color}" ${OL(3)}/><ellipse cx="${x + 12}" cy="${y - 7}" rx="12" ry="10" fill="${color}" ${OL(3)}/>` +
+    `<ellipse cx="${x - 9}" cy="${y + 9}" rx="8" ry="7" fill="${color}" ${OL(3)}/><ellipse cx="${x + 9}" cy="${y + 9}" rx="8" ry="7" fill="${color}" ${OL(3)}/>` +
+    `<ellipse cx="${x}" cy="${y}" rx="3.5" ry="15" fill="${INK}"/>` +
+    `<path d="M${x - 2} ${y - 14}Q${x - 6} ${y - 24} ${x - 10} ${y - 26}M${x + 2} ${y - 14}Q${x + 6} ${y - 24} ${x + 10} ${y - 26}" fill="none" ${OL(2)}/>`
+  );
+}
+
+export function flower(x, y, color) {
+  return (
+    `<path d="M${x} ${y}V${y + 40}" stroke="#3c9d5d" stroke-width="5" stroke-linecap="round"/>` +
+    `<path d="M${x} ${y + 26}Q${x + 18} ${y + 14} ${x + 22} ${y + 22}Q${x + 12} ${y + 32} ${x} ${y + 28}Z" fill="#5cc46e" ${OL(2.5)}/>` +
+    blob([[x, y - 12, 10], [x + 12, y - 2, 10], [x + 7, y + 11, 10], [x - 7, y + 11, 10], [x - 12, y - 2, 10]], color, 3) +
+    `<circle cx="${x}" cy="${y}" r="7" fill="#ffd23f" ${OL(2.5)}/>`
+  );
+}
+
+// 물고기. dir: 1 이면 오른쪽을 본다.
+export function fish(x, y, s, color, { dir = 1, stripe = null, fin = color } = {}) {
+  return (
+    `<g transform="translate(${x} ${y}) scale(${r1(s * dir * 100) / 100} ${s})">` +
+    shape('M-26 0L-54 -20L-50 0L-54 20Z', fin) +
+    shape('M-6 -18Q6 -38 16 -18Z', fin) +
+    oval(0, 0, 34, 22, color) +
+    (stripe ? `<path d="M-8 -20Q-14 0 -8 20M6 -21Q0 0 6 21" fill="none" stroke="${stripe}" stroke-width="6"/>` + oval(0, 0, 34, 22, 'none') : '') +
+    disc(18, -5, 6, '#fff', 2.5) + `<circle cx="20" cy="-5" r="2.8" fill="${INK}"/>` +
+    `</g>`
+  );
+}
+
 // ---------- 사람 ----------
 //
 // (x, y) 는 두 발 사이 바닥. 단위는 s=1 기준 키 약 200.
