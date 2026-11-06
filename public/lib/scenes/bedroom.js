@@ -24,7 +24,7 @@ const diffs = [
   { id: 'bearEar', label: '곰 인형 색', cx: BEAR.x, cy: BEAR.y - 42, r: 34 },
   { id: 'lamp', label: '스탠드 갓 색', cx: 72, cy: 400, r: 38 },
   { id: 'mug', label: '책상 위 연필꽂이', cx: 146, cy: 462, r: 26 },
-  { id: 'blockC', label: '블록 맨 위 글자', cx: 90, cy: 640, r: 30 },
+  { id: 'blockC', label: '블록 맨 위 글자', cx: 87, cy: 689, r: 30 },
   { id: 'car', label: '장난감 자동차 색', cx: 210, cy: 750, r: 40 },
   { id: 'slippers', label: '슬리퍼 색', cx: 390, cy: 760, r: 40 },
   { id: 'catSpot', label: '고양이 목걸이', cx: 530, cy: 740, r: 26 },

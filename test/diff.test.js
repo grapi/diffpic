@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { makePuzzle, findSpot, SCENES, DIFF_COUNT } from '../public/lib/diff.js';
+import { makePuzzle, SCENES, DIFF_COUNT } from '../public/lib/diff.js';
 import { W, H } from '../public/lib/art.js';
 
 const SEEDS = Array.from({ length: 300 }, (_, i) => i * 7919 + 1);
@@ -11,8 +11,8 @@ function each(fn) {
   });
 }
 
-test('장면은 15개 이상이고 id 가 겹치지 않는다', () => {
-  assert.ok(SCENES.length >= 15, `장면 ${SCENES.length}개`);
+test('장면은 30개 이상이고 id 가 겹치지 않는다', () => {
+  assert.ok(SCENES.length >= 30, `장면 ${SCENES.length}개`);
   assert.equal(new Set(SCENES.map((s) => s.id)).size, SCENES.length);
 });
 
@@ -83,13 +83,4 @@ test('왼쪽·오른쪽 그림의 id 가 서로 겹치지 않는다', () => {
   const left = new Set(ids(p.left));
   assert.ok(left.size > 0);
   for (const id of ids(p.right)) assert.ok(!left.has(id), id);
-});
-
-test('findSpot: 판정 원 안이면 그 번호, 밖이면 -1', () => {
-  const p = makePuzzle(42, 0);
-  p.spots.forEach((s, i) => {
-    assert.equal(findSpot(p.spots, s.cx, s.cy), i);
-    assert.equal(findSpot(p.spots, s.cx + s.r * 0.95, s.cy), i);
-  });
-  assert.equal(findSpot(p.spots, -50, -50), -1);
 });

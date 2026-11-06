@@ -22,9 +22,25 @@ import bakery from './scenes/bakery.js';
 import amusement from './scenes/amusement.js';
 import bedroom from './scenes/bedroom.js';
 import zoo from './scenes/zoo.js';
+import rainy from './scenes/rainy.js';
+import market from './scenes/market.js';
+import vet from './scenes/vet.js';
+import station from './scenes/station.js';
+import fire from './scenes/fire.js';
+import garden from './scenes/garden.js';
+import halloween from './scenes/halloween.js';
+import pool from './scenes/pool.js';
+import concert from './scenes/concert.js';
+import museum from './scenes/museum.js';
+import forest from './scenes/forest.js';
+import airport from './scenes/airport.js';
+import artroom from './scenes/artroom.js';
+import soccer from './scenes/soccer.js';
+import bath from './scenes/bath.js';
 
 export const SCENES = [
   living, picnic, kitchen, classroom, beach, playground, camping, snow, undersea, space, farm, bakery, amusement, bedroom, zoo,
+  rainy, market, vet, station, fire, garden, halloween, pool, concert, museum, forest, airport, artroom, soccer, bath,
 ];
 export const DIFF_COUNT = 5;
 const MAX_ATTEMPTS = 50;
@@ -63,7 +79,7 @@ export function makePuzzle(seed, sceneIndex) {
   throw new Error(`퍼즐을 만들지 못했습니다 (seed ${seed}, scene ${scene.id})`);
 }
 
-// 장면 좌표 (x, y) 가 몇 번째 틀린 곳인지. 아니면 -1.
-export function findSpot(spots, x, y) {
-  return spots.findIndex((p) => Math.hypot(p.cx - x, p.cy - y) <= p.r);
+// i 번째 틀린 곳만 바꾼 그림. 달라진 자리를 찾는 데 쓴다 (lib/hit.js).
+export function spotVariant(puzzle, i) {
+  return SCENES.find((s) => s.id === puzzle.scene).draw(new Set([puzzle.spots[i].id]));
 }

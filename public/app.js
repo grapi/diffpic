@@ -1,4 +1,5 @@
-import { makePuzzle, findSpot, SCENES } from './lib/diff.js';
+import { makePuzzle, spotVariant, SCENES } from './lib/diff.js';
+import { buildMasks, locate } from './lib/hit.js';
 import { W, H } from './lib/art.js';
 import { newGame, hit, miss, nextStage, reroll, MAX_LIVES, SPOTS, PERFECT_POINTS } from './lib/game.js';
 import { CHARACTERS, characterSvg, findCharacter } from './lib/characters.js';
@@ -26,11 +27,13 @@ const pics = [els.left, els.right];
 const MISS_COOLDOWN_MS = 400;
 
 const PLAYER_KEY = 'diffpic.player';
+const STAGES = 15; // 한 게임의 판 수. 장면 30개 중 이만큼을 무작위로 골라 한 번씩 낸다.
 const MOOD_MS = 900;
 
-let game = newGame(SCENES.length);
+let game = newGame(STAGES);
 let puzzle = null;
-// 한 게임에 모든 장면이 섞인 순서로 한 번씩 나온다. 판 번호가 곧 순서다.
+let masks = null; // 틀린 곳마다 실제로 달라진 자리. 계산이 끝나기 전에는 null.
+// 장면을 섞어 앞에서부터 한 판에 하나씩 낸다. 판 번호가 곧 순서라 한 게임에 같은 장면은 다시 나오지 않는다.
 let sceneOrder = [];
 let missBlockedUntil = 0;
 let onOverlayButton = null;
@@ -71,8 +74,18 @@ function loadPuzzle() {
   els.left.querySelector('.scene').innerHTML = puzzle.left;
   els.right.querySelector('.scene').innerHTML = puzzle.right;
   for (const svg of pics) svg.querySelector('.marks').replaceChildren();
+  prepareMasks(puzzle);
   els.seedOut.textContent = `${puzzle.title} #${seedLabel(puzzle.seed)}`;
   renderHud();
+}
+
+function prepareMasks(target) {
+  masks = null;
+  buildMasks(target.left, target.spots.map((_, i) => spotVariant(target, i)))
+    .catch(() => []) // 그림 비교가 안 되는 환경이면 판정 원으로만 판정한다
+    .then((result) => {
+      if (puzzle === target) masks = result;
+    });
 }
 
 function svgEl(tag, attrs) {
@@ -319,7 +332,7 @@ function showStart() {
 
 function startGame() {
   sound.unlock();
-  game = newGame(SCENES.length);
+  game = newGame(STAGES);
   shuffleScenes();
   setMood('idle');
   loadPuzzle();
@@ -348,7 +361,7 @@ function onPress(e) {
   const p = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
   if (p.x < 0 || p.y < 0 || p.x > W || p.y > H) return; // 그림 바깥 여백
 
-  const i = findSpot(puzzle.spots, p.x, p.y);
+  const i = locate(puzzle.spots, masks ?? [], game.found, p.x, p.y);
   if (i >= 0) {
     if (game.found.includes(i)) return; // 이미 찾은 곳은 감점 없이 무시
     game = hit(game, i);
@@ -362,6 +375,7 @@ function onPress(e) {
     return;
   }
 
+  if (!masks) return; // 달라진 자리를 아직 모르면 틀렸다고 단정하지 않는다
   const now = performance.now();
   if (now < missBlockedUntil) return;
   missBlockedUntil = now + MISS_COOLDOWN_MS;
